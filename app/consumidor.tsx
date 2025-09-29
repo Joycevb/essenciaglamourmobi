@@ -49,7 +49,7 @@ style={{ marginRight: 10 }}
     <Text style={styles.apelido}>Apelido: {consumidor.apelido}</Text>  
     <Text>Nome: {consumidor.nome}</Text>  
     <Text>Telefone: {consumidor.telefone}</Text>  
-  </View>  
+  </View> 
   <Ionicons name="checkmark-circle" size={22} color="green" />  
 </View>
 

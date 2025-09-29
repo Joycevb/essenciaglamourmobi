@@ -56,10 +56,11 @@ export default function ListagemProdutos() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topo}>
-        <Ionicons name="bag-outline" size={50} color="#330000" />
-      </View>
-
+        <View style={styles.icones}>
+          <View style={styles.topo}>
+            <Ionicons name="bag-outline" size={50} color="#ffffffff" />
+          </View>
+        </View>
       <Text style={styles.titulo}>Listagem de produtos</Text>
 
       <FlatList
@@ -76,9 +77,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    justifyContent: 'center'
+  },
+  icones: {
+    flex: 1,
+    backgroundColor: "#834949ff",
+    alignItems: "center",
+    padding: 0,
+    height: 400,
+    marginBottom: 150,
   },
   topo: {
     height: 200,
+    width: 450,
     backgroundColor: '#630E0E',
     borderBottomLeftRadius: 200,
     borderBottomRightRadius: 200,
