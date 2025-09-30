@@ -38,6 +38,38 @@ export default function RootLayout() {
           headerShown: false
         }}
       />  
+      <Tabs.Screen
+        name= "loguin"
+        options={{
+          title: "Login",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="sign-in" size={size} color={"#ffffffff"} />
+          ),
+          headerStyle: {
+            backgroundColor: "#630E0E"
+          },
+          tabBarStyle: {
+            backgroundColor: "#630E0E"
+          },
+          headerShown: false
+        }}
+      />
+      <Tabs.Screen
+        name= "cadastro"
+        options={{
+          title: "Cadastro",
+          tabBarIcon: ({ color, size }) => (  
+            <FontAwesome name="user-plus" size={size} color={"#ffffffff"} />
+          ),
+          headerStyle: {
+            backgroundColor: "#630E0E"
+          },
+          tabBarStyle: {
+            backgroundColor: "#630E0E"
+          },
+          headerShown: false
+        }}
+      />
     </Tabs>
   );
 
