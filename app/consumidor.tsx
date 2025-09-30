@@ -44,6 +44,12 @@ const dadosIniciais = [
     apelido: "Biel",
     telefone: "83 98779-0101",
   },
+  {
+    id: 6,
+    nome: "Ana Clara",
+    apelido: "Aninha",
+    telefone: "83 99666-1234",
+  }
 ];
 
 function ItemConsumidor({ consumidor, onEdit, onDelete }) {
@@ -172,7 +178,7 @@ export default function Consumidor() {
         )}
       />
 
-      {/* Modal para edição */}
+      {}
       <Modal
         animationType="slide"
         transparent={true}
@@ -282,7 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 2,
     marginHorizontal: 20,
-    flexWrap: "wrap", // permite quebra para os botoes embaixo
+    flexWrap: "wrap", 
     position: "relative",
   },
   apelido: {

@@ -1,35 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const produtos = [
-  {
-    id: '1',
-    nome: 'Essencial Masculino 100 ml',
-    preco: 194.90,
-    imagem: 'https://i.pinimg.com/1200x/d6/19/3b/d6193bf8b65e85865963c4afcb91c048.jpg',
-  },
-  {
-    id: '2',
-    nome: 'Liz Sublime Desodorante Colônia 100ml',
-    preco: 135.90,
-    imagem: 'https://i.pinimg.com/1200x/aa/82/18/aa8218b4aa0f463f8251eacffbb28eb4.jpg',
-  },
-  {
-    id: '3',
-    nome: 'Dream Viagem Encantada Body Splash Desodorante Colônia 200ml',
-    preco: 109.90,
-    imagem: 'https://i.pinimg.com/736x/ec/30/43/ec30438e087f2564566c7b771f83d3ea.jpg',
-  },
-  {
-    id: '4',
-    nome: 'Egeo Choc Desodorante Colônia 90ml',
-    preco: 154.90,
-    imagem: 'https://i.pinimg.com/1200x/76/79/ee/7679eea4f8e025eb8e8718c1a943edfb.jpg',
-  },
-];
-
 export default function ListagemProdutos() {
+
+  const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      const response = await fetch('https://symmetrical-journey-v6r47q7ggrw73xj5v-3000.app.github.dev/api/produto');
+      const data = await response.json();
+      setProdutos(data);
+    }
+
+    fetchProdutos();
+  }, [])
+
+
   const editarProduto = (produto) => {
     Alert.alert("Editar Produto", `Você clicou para editar: ${produto.nome}`);
   };
@@ -40,10 +27,10 @@ export default function ListagemProdutos() {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Image source={{ uri: item.imagem }} style={styles.imagemProduto} />
+      <Image source={{ uri: item.imagem_url }} style={styles.imagemProduto} />
       <View style={styles.infoProduto}>
         <Text style={styles.nomeProduto}>{item.nome}</Text>
-        <Text style={styles.precoProduto}>R$ {item.preco.toFixed(2)}</Text>
+        <Text style={styles.precoProduto}>R$ {item.preco}</Text>
       </View>
       <TouchableOpacity onPress={() => editarProduto(item)} style={styles.iconeAcao}>
         <Ionicons name="pencil" size={20} color="black" />
