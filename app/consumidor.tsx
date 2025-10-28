@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   Text,
   View,
@@ -6,61 +6,26 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
-  Alert,
   Image,
   Modal,
   Button,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const dadosIniciais = [
-  {
-    id: 1,
-    nome: "Rosa da Silva",
-    apelido: "Rosa das Flores",
-    telefone: "83 99877-6655",
-  },
-  {
-    id: 2,
-    nome: "Elisângela",
-    apelido: "Danda",
-    telefone: "83 99807-6144",
-  },
-  {
-    id: 3,
-    nome: "Joyce",
-    apelido: "Istelinha",
-    telefone: "83 98700-7878",
-  },
-  {
-    id: 4,
-    nome: "Camila",
-    apelido: "Mica da Padaria",
-    telefone: "83 98089-0990",
-  },
-  {
-    id: 5,
-    nome: "Gabriel",
-    apelido: "Biel",
-    telefone: "83 98779-0101",
-  },
-  {
-    id: 6,
-    nome: "Ana Clara",
-    apelido: "Aninha",
-    telefone: "83 99666-1234",
-  }
+  { id: 1, nome: "Rosa da Silva", apelido: "Rosa das Flores", telefone: "83 99877-6655" },
+  { id: 2, nome: "Elisângela", apelido: "Danda", telefone: "83 99807-6144" },
+  { id: 3, nome: "Joyce", apelido: "Istelinha", telefone: "83 98700-7878" },
+  { id: 4, nome: "Camila", apelido: "Mica da Padaria", telefone: "83 98089-0990" },
+  { id: 5, nome: "Gabriel", apelido: "Biel", telefone: "83 98779-0101" },
+  { id: 6, nome: "Ana Clara", apelido: "Aninha", telefone: "83 99666-1234" },
 ];
 
 function ItemConsumidor({ consumidor, onEdit, onDelete }) {
   return (
     <View style={styles.caixa}>
-      <Ionicons
-        name="person-circle-outline"
-        size={50}
-        color="black"
-        style={{ marginRight: 10 }}
-      />
+      <Ionicons name="person-circle-outline" size={50} color="black" style={{ marginRight: 10 }} />
 
       <View style={{ flex: 1 }}>
         <Text style={styles.apelido}>Apelido: {consumidor.apelido}</Text>
@@ -68,8 +33,7 @@ function ItemConsumidor({ consumidor, onEdit, onDelete }) {
         <Text>Telefone: {consumidor.telefone}</Text>
       </View>
 
-      {/* Ícones editar e excluir embaixo */}
-      <View style={styles.botoesBaixo}>
+      <View style={styles.botoesContainer}>
         <TouchableOpacity onPress={() => onEdit(consumidor)} style={{ marginRight: 15 }}>
           <Ionicons name="create-outline" size={20} color="black" />
         </TouchableOpacity>
@@ -86,12 +50,29 @@ export default function Consumidor() {
   const [consumidores, setConsumidores] = useState(dadosIniciais);
   const [modalVisible, setModalVisible] = useState(false);
   const [editConsumidor, setEditConsumidor] = useState(null);
-
+  const [isAdding, setIsAdding] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const [nome, setNome] = useState("");
   const [apelido, setApelido] = useState("");
   const [telefone, setTelefone] = useState("");
 
+  // Estados para o alerta visual
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const filteredConsumidores = useMemo(() => {
+    if (!searchText.trim()) return consumidores;
+    const lower = searchText.toLowerCase().trim();
+    return consumidores.filter(
+      (c) =>
+        c.nome.toLowerCase().includes(lower) ||
+        c.apelido.toLowerCase().includes(lower)
+    );
+  }, [consumidores, searchText]);
+
   const abrirEdicao = (consumidor) => {
+    setIsAdding(false);
     setEditConsumidor(consumidor);
     setNome(consumidor.nome);
     setApelido(consumidor.apelido);
@@ -99,44 +80,68 @@ export default function Consumidor() {
     setModalVisible(true);
   };
 
-  const salvarEdicao = () => {
+  const adicionarConsumidor = () => {
+    setIsAdding(true);
+    setEditConsumidor(null);
+    setNome("");
+    setApelido("");
+    setTelefone("");
+    setModalVisible(true);
+  };
+
+  const mostrarAlerta = (mensagem) => {
+    setAlertMessage(mensagem);
+    setShowAlert(true);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+
+    setTimeout(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start(() => setShowAlert(false));
+    }, 3000);
+  };
+
+  const salvarConsumidor = () => {
     if (!nome.trim() || !apelido.trim() || !telefone.trim()) {
-      Alert.alert("Erro", "Preencha todos os campos!");
+      mostrarAlerta("Preencha todos os campos!");
       return;
     }
 
-    const novosConsumidores = consumidores.map((c) => {
-      if (c.id === editConsumidor.id) {
-        return { ...c, nome: nome.trim(), apelido: apelido.trim(), telefone: telefone.trim() };
-      }
-      return c;
-    });
+    if (isAdding) {
+      const novoConsumidor = {
+        id: consumidores.length
+          ? Math.max(...consumidores.map((c) => c.id)) + 1
+          : 1,
+        nome: nome.trim(),
+        apelido: apelido.trim(),
+        telefone: telefone.trim(),
+      };
+      setConsumidores((prev) => [novoConsumidor, ...prev]);
+      mostrarAlerta("✅ Cadastrado com sucesso!");
+    } else {
+      const novosConsumidores = consumidores.map((c) =>
+        c.id === editConsumidor.id
+          ? { ...c, nome: nome.trim(), apelido: apelido.trim(), telefone: telefone.trim() }
+          : c
+      );
+      setConsumidores(novosConsumidores);
+      mostrarAlerta("✅ Atualizado com sucesso!");
+    }
 
-    setConsumidores(novosConsumidores);
     setModalVisible(false);
     setEditConsumidor(null);
+    setIsAdding(false);
   };
 
   const excluirConsumidor = (consumidor) => {
-    Alert.alert(
-      "Confirmar exclusão",
-      `Deseja excluir ${consumidor.nome}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => {
-            setConsumidores((prev) => prev.filter((c) => c.id !== consumidor.id));
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  const adicionarConsumidor = () => {
-    Alert.alert("Adicionar novo consumidor", "Funcionalidade não implementada ainda");
+    setConsumidores((prev) => prev.filter((c) => c.id !== consumidor.id));
+    mostrarAlerta(`🗑️ ${consumidor.nome} foi excluído.`);
   };
 
   return (
@@ -152,11 +157,16 @@ export default function Consumidor() {
           <Text style={styles.ola}>Olá, Elineide!</Text>
         </View>
 
-        <TextInput
-          style={styles.pesquisa}
-          placeholder="Pesquisar"
-          placeholderTextColor="#555"
-        />
+        <View style={styles.caixaPesquisa}>
+          <TextInput
+            style={styles.inputPesquisa}
+            placeholder="Pesquisar por nome ou apelido"
+            placeholderTextColor="#555"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+          <Ionicons name="search-outline" size={20} color="#555" style={styles.iconePesquisa} />
+        </View>
       </View>
 
       <View style={styles.headerLista}>
@@ -167,18 +177,17 @@ export default function Consumidor() {
       </View>
 
       <FlatList
-        data={consumidores}
-        keyExtractor={(item) => item.id.toString()}
+        data={filteredConsumidores}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <ItemConsumidor
-            consumidor={item}
-            onEdit={abrirEdicao}
-            onDelete={excluirConsumidor}
-          />
+          <ItemConsumidor consumidor={item} onEdit={abrirEdicao} onDelete={excluirConsumidor} />
+        )}
+        ListEmptyComponent={() => (
+          <Text style={styles.nenhumResultado}>Nenhum consumidor encontrado.</Text>
         )}
       />
 
-      {}
+      {/* Modal de adicionar/editar */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -186,21 +195,36 @@ export default function Consumidor() {
         onRequestClose={() => {
           setModalVisible(false);
           setEditConsumidor(null);
+          setIsAdding(false);
         }}
       >
         <View style={styles.modalFundo}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitulo}>Editar consumidor</Text>
+            <Ionicons
+              name="person-circle-outline"
+              size={70}
+              color="#630E0E"
+              style={{ alignSelf: "center", marginBottom: 10 }}
+            />
+            <Text style={styles.modalTitulo}>
+              {isAdding ? "Cadastrar consumidor" : "Editar consumidor"}
+            </Text>
 
-            <Text>Nome:</Text>
+            <View style={styles.inputGroup}>
+              <Ionicons name="person-outline" size={20} color="black" />
+              <Text style={{ marginLeft: 8 }}>Nome:</Text>
+            </View>
             <TextInput
               style={styles.modalInput}
               value={nome}
               onChangeText={setNome}
-              placeholder="Nome"
+              placeholder="Nome completo"
             />
 
-            <Text>Apelido:</Text>
+            <View style={styles.inputGroup}>
+              <Ionicons name="people-outline" size={20} color="black" />
+              <Text style={{ marginLeft: 8 }}>Apelido:</Text>
+            </View>
             <TextInput
               style={styles.modalInput}
               value={apelido}
@@ -208,25 +232,29 @@ export default function Consumidor() {
               placeholder="Apelido"
             />
 
-            <Text>Telefone:</Text>
+            <View style={styles.inputGroup}>
+              <Ionicons name="call-outline" size={20} color="black" />
+              <Text style={{ marginLeft: 8 }}>Telefone:</Text>
+            </View>
             <TextInput
               style={styles.modalInput}
               value={telefone}
               onChangeText={setTelefone}
-              placeholder="Telefone"
+              placeholder="(DD) 9xxxx-xxxx"
               keyboardType="phone-pad"
             />
 
-            <View style={styles.modalBotoes}>
-              <Button
-                title="Cancelar"
-                onPress={() => {
-                  setModalVisible(false);
-                  setEditConsumidor(null);
-                }}
-              />
-              <Button title="Salvar" onPress={salvarEdicao} />
-            </View>
+            <TouchableOpacity style={styles.botaoSalvar} onPress={salvarConsumidor}>
+              <Text style={styles.textoBotao}>Salvar</Text>
+            </TouchableOpacity>
+
+            {/* ALERTA VISUAL */}
+            {showAlert && (
+              <Animated.View style={[styles.alertContainer, { opacity: fadeAnim }]}>
+                <Ionicons name="checkmark-circle" size={20} color="#0a7a0a" />
+                <Text style={styles.alertText}>{alertMessage}</Text>
+              </Animated.View>
+            )}
           </View>
         </View>
       </Modal>
@@ -235,38 +263,25 @@ export default function Consumidor() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffff",
-  },
+  container: { flex: 1, backgroundColor: "#ffff" },
   header: {
     backgroundColor: "#630E0E",
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 15,
   },
-  saudacao: {
+  saudacao: { flexDirection: "row", alignItems: "center", marginBottom: 15 },
+  fotoPerfil: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
+  ola: { fontSize: 18, fontWeight: "bold", color: "white" },
+  caixaPesquisa: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
-  },
-  fotoPerfil: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  ola: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-  },
-  pesquisa: {
     backgroundColor: "#fff",
     borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: 8,
   },
+  inputPesquisa: { flex: 1, paddingVertical: 8 },
+  iconePesquisa: { marginLeft: 10 },
   headerLista: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -275,10 +290,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     paddingHorizontal: 20,
   },
-  titulo: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+  titulo: { fontSize: 16, fontWeight: "bold" },
   caixa: {
     flexDirection: "row",
     alignItems: "center",
@@ -288,21 +300,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 2,
     marginHorizontal: 20,
-    flexWrap: "wrap", 
-    position: "relative",
   },
-  apelido: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 3,
-  },
-  botoesBaixo: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "100%",
-    marginTop: 10,
-    paddingRight: 10,
-  },
+  apelido: { fontSize: 16, fontWeight: "bold", marginBottom: 3 },
+  botoesContainer: { flexDirection: "row", marginLeft: "auto", alignItems: "center" },
+  nenhumResultado: { textAlign: "center", marginTop: 20, color: "#888" },
   modalFundo: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
@@ -319,17 +320,43 @@ const styles = StyleSheet.create({
   modalTitulo: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 15,
+    color: "#630E0E",
+  },
+  inputGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
   },
   modalInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 8,
-    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderColor: "#aaa",
+    marginBottom: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
   },
-  modalBotoes: {
+  botaoSalvar: {
+    backgroundColor: "#00c200",
+    borderRadius: 25,
+    paddingVertical: 10,
+    marginTop: 15,
+    alignItems: "center",
+  },
+  textoBotao: { color: "white", fontWeight: "bold", fontSize: 16 },
+  alertContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#a7f0a2",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginTop: 20,
+  },
+  alertText: {
+    color: "#0a7a0a",
+    fontWeight: "bold",
+    marginLeft: 8,
   },
 });

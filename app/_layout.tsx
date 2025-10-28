@@ -6,6 +6,22 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 export default function RootLayout() {
   return (
     <Tabs>
+      <Tabs.Screen
+        name= "loguin"
+        options={{
+          title: "Login",
+          //tabBarIcon: ({ color, size }) => (
+          //<FontAwesome name="sign-in" size={size} color={"#ffffffff"} />
+          // ),
+          headerStyle: {
+            backgroundColor: "#630E0E"
+          },
+          tabBarStyle: {
+            backgroundColor: "#630E0E"
+          },
+          headerShown: false
+        }}
+      />
       <Tabs.Screen 
         name= "consumidor"
         options={{
@@ -38,22 +54,6 @@ export default function RootLayout() {
           headerShown: false
         }}
       />  
-      <Tabs.Screen
-        name= "loguin"
-        options={{
-          title: "Login",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="sign-in" size={size} color={"#ffffffff"} />
-          ),
-          headerStyle: {
-            backgroundColor: "#630E0E"
-          },
-          tabBarStyle: {
-            backgroundColor: "#630E0E"
-          },
-          headerShown: false
-        }}
-      />
       <Tabs.Screen
         name= "cadastro"
         options={{
