@@ -20,6 +20,10 @@ const dadosIniciais = [
   { id: 4, nome: "Camila", apelido: "Mica da Padaria", telefone: "83 98089-0990" },
   { id: 5, nome: "Gabriel", apelido: "Biel", telefone: "83 98779-0101" },
   { id: 6, nome: "Ana Clara", apelido: "Aninha", telefone: "83 99666-1234" },
+  { id: 7, nome: "Lucas", apelido: "Luquinhas", telefone: "83 99555-5678" },
+  { id: 8, nome: "Mariana", apelido: "Mari", telefone: "83 99444-9101" },
+  { id: 9, nome: "Felipe", apelido: "Lipe", telefone: "83 99333-1122" },
+  { id: 10, nome: "Juliana", apelido: "Ju", telefone: "83 99222-3344" },
 ];
 
 function ItemConsumidor({ consumidor, onEdit, onDelete }) {
@@ -56,7 +60,7 @@ export default function Consumidor() {
   const [apelido, setApelido] = useState("");
   const [telefone, setTelefone] = useState("");
 
-  // Estados para o alerta visual
+  
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -170,7 +174,7 @@ export default function Consumidor() {
       </View>
 
       <View style={styles.headerLista}>
-        <Text style={styles.titulo}>ʟɪꜱᴛᴀɢᴇᴍ ᴅᴇ ᴄᴏɴꜱᴜᴍɪᴅᴏʀᴇꜱ:</Text>
+        <Text style={styles.titulo}>𝐋𝐈𝐒𝐓𝐀𝐆𝐄𝐌 𝐃𝐄 𝐂𝐎𝐍𝐒𝐔𝐌𝐈𝐃𝐎𝐑 :</Text>
         <TouchableOpacity onPress={adicionarConsumidor}>
           <Ionicons name="person-add-outline" size={26} color="black" />
         </TouchableOpacity>
@@ -187,7 +191,7 @@ export default function Consumidor() {
         )}
       />
 
-      {/* Modal de adicionar/editar */}
+      {}
       <Modal
         animationType="slide"
         transparent={true}
@@ -248,7 +252,7 @@ export default function Consumidor() {
               <Text style={styles.textoBotao}>Salvar</Text>
             </TouchableOpacity>
 
-            {/* ALERTA VISUAL */}
+            {}
             {showAlert && (
               <Animated.View style={[styles.alertContainer, { opacity: fadeAnim }]}>
                 <Ionicons name="checkmark-circle" size={20} color="#0a7a0a" />
