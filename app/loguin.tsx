@@ -11,7 +11,6 @@ import {
   Platform,
   Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import do ícone
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,63 +30,71 @@ export default function Login() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      {/* Título no topo */}
-      <Text style={styles.titulo}>Login</Text>
-
-      {/* Ícone de usuário acima do card */}
-      <View style={styles.iconeUsuarioContainer}>
-        <Ionicons name="person-circle-outline" size={90} color="#fff" />
+      {}
+      <View style={styles.tituloContainer}>
+        <Text style={styles.titulo}>Loguin</Text>
       </View>
 
-      {/* Card principal */}
+      {}
+      <Image
+        source={{
+          uri: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_placeholder.png", // coloque aqui a sua logo
+        }}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
+      {}
       <View style={styles.card}>
-        <Text style={styles.label}>Email:</Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          placeholder="Digite seu e-mail"
+          placeholder="elineide@glamour.com.br"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
         />
 
-        <Text style={styles.label}>Senha:</Text>
+        <Text style={styles.label}>Senha</Text>
         <TextInput
           style={styles.input}
-          placeholder="Digite sua senha"
+          placeholder="••••••"
           secureTextEntry
           value={senha}
           onChangeText={setSenha}
         />
 
+        {}
         <TouchableOpacity style={styles.botao} onPress={fazerLogin}>
           <Link href="/consumidor" style={styles.botaoTexto}>
-            Login
+            Loguin
           </Link>
         </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Text style={styles.esqueceuSenha}>Esqueceu a senha?</Text>
-        </TouchableOpacity>
-
-        {/* Ícones sociais */}
+        {}
         <View style={styles.iconesContainer}>
           <Image
             source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
+              uri: "https://play-lh.googleusercontent.com/NN8G4Xc03GSv2_Tu-icuoeOwSo1xoZ4ouzUl24fVlwm5OeIAo7gV0zS1dVRWgCay-BU", 
             }}
             style={styles.icone}
           />
           <Image
             source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png",
+              uri: "https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/BHkEd6znUYJ.png", 
             }}
             style={styles.icone}
           />
         </View>
       </View>
 
-      {/* Indicador de carregamento */}
+      {}
+      <TouchableOpacity>
+        <Text style={styles.esqueceuSenha}>Esqueceu sua senha?</Text>
+      </TouchableOpacity>
+
+      {}
       {carregando && (
         <View style={styles.carregandoContainer}>
           <Text style={styles.carregandoTexto}>Carregando...</Text>
@@ -101,48 +108,54 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#630E0E",
+    backgroundColor: "#5B0A0A", 
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
   },
+  tituloContainer: {
+    position: "absolute",
+    top: 50,
+    left: 25,
+  },
   titulo: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    alignSelf: "flex-start",
-    marginBottom: 10,
   },
-  iconeUsuarioContainer: {
+  logo: {
+    width: 130,
+    height: 80,
     marginBottom: 10,
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 40,
+    borderRadius: 12,
     padding: 25,
     width: "90%",
     alignItems: "center",
+    elevation: 5,
   },
   label: {
     alignSelf: "flex-start",
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 5,
-    fontSize: 16,
+    fontSize: 15,
   },
   input: {
-    backgroundColor: "#d9d9d9",
+    backgroundColor: "#f2f2f2",
     width: "100%",
-    borderRadius: 20,
+    borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
     fontSize: 15,
   },
   botao: {
-    backgroundColor: "#630E0E",
+    backgroundColor: "#222",
     marginTop: 20,
     paddingVertical: 12,
-    borderRadius: 20,
+    borderRadius: 8,
     width: "100%",
     alignItems: "center",
   },
@@ -151,22 +164,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  esqueceuSenha: {
-    color: "#000",
-    marginTop: 15,
-    marginBottom: 10,
-    alignSelf: "center",
-  },
   iconesContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 15,
     gap: 25,
   },
   icone: {
-    width: 35,
-    height: 35,
-    borderRadius: 20,
+    width: 45,
+    height: 45,
+    borderRadius: 10,
+  },
+  esqueceuSenha: {
+    color: "#fff",
+    marginTop: 15,
+    fontWeight: "bold",
   },
   carregandoContainer: {
     marginTop: 25,
